@@ -220,7 +220,8 @@ var klv = function(buffer, format) {
       var packet = result[i].value;
       for (tag in packet) {
         var name = packet[tag].name;
-        name = name.slice(0,1).toLowerCase() + name.slice(1).replace(/\s/g, '');
+        name = name.toLowerCase();
+        name = name.replace(/(\s)(\w)/g, function(match, p1, p2){return p2.toUpperCase()})
         result[i].value[name] = packet[tag];
         delete result[i].value[tag];
       }
