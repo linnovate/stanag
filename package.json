@@ -1,0 +1,14 @@
+{
+  "name": "stanag",
+  "version": "1.0.0",
+  "description": "Access and use the Nato Standardization Agreement based standards",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "email": "avraham@linnovate.net",
+    "name": "Avraham Ostreicher"
+  },
+  "license": "ISC"
+}
