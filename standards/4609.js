@@ -16,7 +16,7 @@ module.exports = {
   1: {
     tag: 1,
     name: 'Checksum',
-    units: 'none',
+    units: 'None',
     format: 'uint16',
     length: 2,
     formula: function(v) {
@@ -31,7 +31,7 @@ module.exports = {
     format: 'uint64',
     length: 8,
     formula: function(v) {
-      return new Date(parseInt(v,16)/1000).toISOString();
+      return parseInt(v,16);
     }
   },
 
@@ -866,7 +866,7 @@ module.exports = {
     units: 'Microseconds',
     format: 'uint64',
     formula: function(v) {
-      return new Date(parseInt(v,16)/1000).toISOString();
+      return parseInt(v,16);
     }
   },
 

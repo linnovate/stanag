@@ -7,6 +7,47 @@ var stanag4609 = require('./standards/4609');
   * @param data, data String to be parsed.
   *
   */
+var formatting = function(value, units) {
+
+  var text;
+
+  switch (units) {
+    case 'Degrees':
+      text = value.toFixed(2) + '°';
+    break;
+    case 'Celcius':
+      text = value + '°';
+    break;
+    case 'Kilogram':
+      text = value.toFixed(2) + ' kg';
+    break;
+    case 'Microseconds':
+      text = new Date(value/1000).toISOString();
+    break;
+    case 'Millibar':
+      text = value.toFixed(2) + ' mb';
+    break;
+    case 'Meters':
+      text = value.toFixed(2) + ' m';
+    break;
+    case 'Meters/Second':
+      text = value.toFixed(2) + ' M/s';
+    break;
+    case 'Percent':
+      text = value.toFixed(2) + '%';
+    break;
+    case 'Pixels':
+      text = value + ' px';
+    break;
+    default:
+      text = value;
+    break;
+  }
+
+  return text;
+}
+
+
 
 var tlv = function(data) {
 
@@ -24,12 +65,20 @@ var tlv = function(data) {
     name = stanag4609[tag].name;
     units = stanag4609[tag].units;
 
+
+    // format raw value
+
+    var formatted = formatting(value, units)
+    value.formatted = formatted;
+
+
     result[tag] = {
       tag: tag,
       length: length,
       name: name,
       units: units,
-      value: value
+      value: value,
+      formatted: formatted
     };
 
     i += 4 + length * 2;
@@ -38,17 +87,14 @@ var tlv = function(data) {
 
 
 
-  // some Values of Tags depends on other Tags' values, so we can add it only after all Tags are parsed.
+  // some Values of Tags (26-33) are depended on other Tags' values, so we can add it only after all Tags are parsed.
 
-  if(result[26]) result[26].value += result[23].value
-  if(result[27]) result[27].value += result[24].value
-  if(result[28]) result[28].value += result[23].value
-  if(result[29]) result[29].value += result[24].value
-  if(result[30]) result[30].value += result[23].value
-  if(result[31]) result[31].value += result[24].value
-  if(result[32]) result[32].value += result[23].value
-  if(result[33]) result[33].value += result[24].value
-
+  var keys = Object.keys(result);
+  keys = keys.slice(keys.indexOf('26'), keys.indexOf('33')+1)
+  keys.forEach(function(key){
+    result[key].value += result[23 + key%2].value;
+    result[key].formatted = formatting(result[key].value, result[key].units);
+  })
 
   return result;
 
@@ -82,6 +128,7 @@ var checksum = function(data, checksum) {
 
 
 
+
 /**
   * @param buffer, Buffer array to be parsed.
   * @param format, format of returned output.
@@ -89,6 +136,15 @@ var checksum = function(data, checksum) {
   */
 
 var klv = function(buffer, format) {
+
+
+  // validate format parameter;
+
+  var format = format || 'tag';
+  var validFormats = ['name','tag'];
+  if(!validFormats.some(function(v){return v == format})) {
+    throw new Error('Invalid format: "' + format + '". Valid formats are: ' + validFormats.join(', '));
+  }
 
 
   // treating the buffer as a string, where each 2 characters represent 1 byte.
@@ -147,7 +203,7 @@ var klv = function(buffer, format) {
     
     // check file length. original length is supllied in value[1].
 
-    if(value[1].value) {
+    if(value[1]) {
       result[result.length - 1].checksum = checksum(data.slice(start,pointer), value[1].value)
     }
 
@@ -159,9 +215,6 @@ var klv = function(buffer, format) {
   // formatting the output.
 
   switch (format) {
-    case 'tag':
-    case undefined:
-    break;
     case 'name':
     for(var i=0; i<result.length; i++) {
       var packet = result[i].value;
@@ -173,18 +226,11 @@ var klv = function(buffer, format) {
       }
     }
     break;
-    case 'human':
-    for(var i=0; i<result.length; i++) {
-      var packet = result[i].value;
-      var text = '';
-      for (tag in packet) {
-        text += packet[tag].name + ': ' + packet[tag].value + ' ' + packet[tag].units + '\n';
-      }
-      result[i].value = text;
-    }
-    break;
+    case 'tag':
+    case undefined:
     default:
-    return 'Invalid format: "' + format + '". Valid formats are: "tag"(default), "name" or "human"';
+      result = result;
+    break;
   }
 
 
