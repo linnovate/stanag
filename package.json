@@ -1,6 +1,6 @@
 {
   "name": "stanag",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Access and use the Nato Standardization Agreement based standards",
   "main": "index.js",
   "scripts": {
@@ -10,5 +10,9 @@
     "email": "avraham@linnovate.net",
     "name": "Avraham Ostreicher"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https@github.com:linnovate/stanag.git"
+  }
 }
