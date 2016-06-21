@@ -1,18 +1,24 @@
 # stanag
 
-npm package to access and use the Nato Standardization Agreement based standards for node.js application
+[![npm package](https://nodei.co/npm/stanag.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/stanag)
+
+an npm package to access and use the Nato Standardization Agreement based standards for node.js application
 
 Currenlly supported standards:
- - 0601.9 [(Docs)](http://www.gwg.nga.mil/misb/docs/standards/ST0601.9.pdf)
+ - 0601.9 ([Docs](http://www.gwg.nga.mil/misb/docs/standards/ST0601.9.pdf))
 
-
-provide a single function
+provides a single function
 ```js
 stanag(Buffer[, format])
 ```
 
 where Buffer is a node.js Buffer array returned by fs.readFile or some other functions,
 and format is one of: 'tag' (default) or 'name'.
+
+# install
+```
+npm install stanag
+```
 
 # examples
 
