@@ -1,52 +1,5 @@
-
-
-var stanag4609 = require('./standards/4609');
-
-
-/**
-  * @param data, data String to be parsed.
-  *
-  */
-var formatting = function(value, units) {
-
-  var text;
-
-  switch (units) {
-    case 'Degrees':
-      text = value.toFixed(2) + '°';
-    break;
-    case 'Celcius':
-      text = value + '°';
-    break;
-    case 'Kilogram':
-      text = value.toFixed(2) + ' kg';
-    break;
-    case 'Microseconds':
-      text = new Date(value/1000).toISOString();
-    break;
-    case 'Millibar':
-      text = value.toFixed(2) + ' mb';
-    break;
-    case 'Meters':
-      text = value.toFixed(2) + ' m';
-    break;
-    case 'Meters/Second':
-      text = value.toFixed(2) + ' M/s';
-    break;
-    case 'Percent':
-      text = value.toFixed(2) + '%';
-    break;
-    case 'Pixels':
-      text = value + ' px';
-    break;
-    default:
-      text = value;
-    break;
-  }
-
-  return text;
-}
-
+var stanag = require('./standards/4609');
+var formatting = require('./formatting')
 
 
 var tlv = function(data) {
@@ -61,16 +14,9 @@ var tlv = function(data) {
     var length = parseInt(data.slice(i+2,i+4),16);
     var value = data.slice(i+4, i+4+length * 2);
 
-    value = stanag4609[tag].formula(value);
-    name = stanag4609[tag].name;
-    units = stanag4609[tag].units;
-
-
-    // format raw value
-
-    var formatted = formatting(value, units)
-    value.formatted = formatted;
-
+    value = stanag[tag].formula(value);
+    name = stanag[tag].name;
+    units = stanag[tag].units;
 
     result[tag] = {
       tag: tag,
@@ -78,23 +24,22 @@ var tlv = function(data) {
       name: name,
       units: units,
       value: value,
-      formatted: formatted
     };
 
     i += 4 + length * 2;
 
   }
 
+  // some values are depended on other Tags' values (Tags 26-33), so we can add it only after all Tags are parsed.
+
+  result = stanag.finish(result);
 
 
-  // some Values of Tags (26-33) are depended on other Tags' values, so we can add it only after all Tags are parsed.
+  // formatting value
 
-  var keys = Object.keys(result);
-  keys = keys.slice(keys.indexOf('26'), keys.indexOf('33')+1)
-  keys.forEach(function(key){
-    result[key].value += result[23 + key%2].value;
-    result[key].formatted = formatting(result[key].value, result[key].units);
-  })
+  for (var n in result) {
+    result[n].formatted = formatting(result[n].value, result[n].units);
+  }
 
   return result;
 
@@ -140,8 +85,8 @@ var klv = function(buffer, format) {
 
   // validate format parameter;
 
-  var format = format || 'tag';
-  var validFormats = ['name','tag'];
+  var format = format || 'number';
+  var validFormats = ['name','number'];
   if(!validFormats.some(function(v){return v == format})) {
     throw new Error('Invalid format: "' + format + '". Valid formats are: ' + validFormats.join(', '));
   }
@@ -221,7 +166,11 @@ var klv = function(buffer, format) {
       for (tag in packet) {
         var name = packet[tag].name;
         name = name.toLowerCase();
-        name = name.replace(/(\s)(\w)/g, function(match, p1, p2){return p2.toUpperCase()})
+        name = name.replace(/(\s)[\(]?(\w)|([\)])?/g, function(match, p1, p2, p3){
+          if (p2) return p2.toUpperCase();
+          else if(p3) return '';
+          else return match;
+        })
         result[i].value[name] = packet[tag];
         delete result[i].value[tag];
       }

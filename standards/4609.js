@@ -1151,5 +1151,19 @@ module.exports = {
     formula: function(v) {
                                       // See MISB ST 1201
     }
+  },
+
+
+  // some values are depended on other Tags' values (Tags 26-33), so we can add it only after all Tags are parsed.
+
+  finish: function (data) {
+
+    var keys = Object.keys(data);
+    keys = keys.slice(keys.indexOf('26'), keys.indexOf('33')+1)
+    keys.forEach(function(key){
+      data[key].value += data[23 + key%2].value;
+    })
+
+    return data;
   }
 }
