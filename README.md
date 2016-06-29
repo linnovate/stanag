@@ -99,7 +99,7 @@ fs.readFile(BINARY_FILE, function(err,data){
         "value": "8ced",
         "formatted": "8ced"
       },
-      "uNIXTimeStamp": {
+      "unixTimeStamp": {
         "tag": 2,
         "length": 8,
         "name": "UNIX Time Stamp",
@@ -107,7 +107,7 @@ fs.readFile(BINARY_FILE, function(err,data){
         "value": 1224807209913000,
         "formatted": "2008-10-24T00:13:29.913Z"
       },
-      "missionID": {
+      "missionId": {
         "tag": 3,
         "length": 9,
         "name": "Mission ID",
