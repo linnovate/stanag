@@ -280,7 +280,7 @@ module.exports = {
 
   23: {
     tag: 23,
-    name: 'Sensor Relative Roll Angle',
+    name: 'Frame Center Latitude',
     units: 'Degrees',
     format: 'int32',
     LS_range: 180,
