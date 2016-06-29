@@ -1,15 +1,13 @@
 {
   "name": "stanag",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Access and use the Nato Standardization Agreement based standards",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": {
-    "email": "avraham@linnovate.net",
-    "name": "Avraham Ostreicher"
-  },
+  "homepage": "https://github.com/linnovate/stanag",
+  "author": "Linnovate <mean@linnovate.net>",
   "license": "ISC",
   "repository": {
     "type": "git",
